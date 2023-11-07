@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: #191919;
+  color: #fefefe;
+  font-family: "Geologica", sans-serif;
+}
+
+#react-target {
+  height: 100%;
+  width: 100%;
+}
+
+.scrollbar {
+  scrollbar-color: #6a0f0f;
+}
+
+.scrollbar::-webkit-scrollbar {
+  background: #191919;
+  width: 8px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: #6a0f0f;
+  border-radius: 8px;
+}
