@@ -143,7 +143,7 @@ export const Start = () => {
       <Col span={24}>
         <div
           style={{
-            height: "40vh",
+            height: "39.3vh",
             backgroundImage: "url('https://tinyurl.com/6yct5yap')",
             backgroundClip: "border-box",
             backgroundRepeat: "no-repeat",
@@ -194,6 +194,27 @@ export const Start = () => {
             backgroundSize: "contain",
           }}
         />
+      </Col>
+      <Col span={24}>
+        <Row gutter={[8, 8]} justify="end" align="middle">
+          <Col>
+            <a
+              href="https://www.youtube.com/channel/UCwICJE1M55ZHJ2EaFPWrkNA"
+              target="_blank"
+            >
+              YouTube
+            </a>
+          </Col>
+          <Col>|</Col>
+          <Col>
+            <a
+              href="https://steamcommunity.com/groups/205threconbattalion"
+              target="_blank"
+            >
+              Steam Community
+            </a>
+          </Col>
+        </Row>
       </Col>
     </Row>
   );
@@ -332,7 +353,7 @@ export const Speciality = () => {
         <div
           style={{
             height: "40vh",
-            backgroundImage: "url('https://tinyurl.com/4wjrpucc')",
+            backgroundImage: "url('https://tinyurl.com/4ea4pyfc')",
             backgroundClip: "border-box",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "0% 30%",
