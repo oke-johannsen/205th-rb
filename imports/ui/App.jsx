@@ -2,11 +2,13 @@ import React from "react";
 import {
   Button,
   Card,
-  Carousel,
   Col,
   ConfigProvider,
+  Divider,
+  Form,
+  Input,
+  Result,
   Row,
-  Tooltip,
   theme,
 } from "antd";
 import {
@@ -14,13 +16,25 @@ import {
   createBrowserRouter,
   useNavigate,
 } from "react-router-dom";
+import { Meteor } from "meteor/meteor";
+import { useTracker } from "meteor/react-meteor-data";
 
 const App = ({}) => {
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Home children={<Start />} />,
-      errorElement: <>error 404</>,
+      errorElement: (
+        <Home
+          children={
+            <Result
+              status={404}
+              title="404"
+              subTitle="Die Seite, die du versuchst aufzurufen, existiert leider nicht."
+            />
+          }
+        />
+      ),
     },
     {
       path: "/start",
@@ -39,16 +53,22 @@ const App = ({}) => {
       element: <Home children={<Gallery />} />,
     },
     {
-      path: "/roster",
-      element: <Home children={<Start />} />,
+      path: "/orbat",
+      element: <Home children={<Orbat />} />,
     },
     {
       path: "/login",
-      element: <Home children={<Start />} />,
+      element: <Home children={<Login />} />,
+    },
+    {
+      path: "/member",
+      element: <Member />,
     },
   ]);
   return <RouterProvider router={router} />;
 };
+
+export const isSmall = () => !!(window.innerWidth < 980);
 
 export const Home = ({ children }) => {
   return (
@@ -68,20 +88,17 @@ export const Home = ({ children }) => {
       }}
     >
       <Row style={{ padding: "0.5rem" }}>
-        <Col span={24} style={{ height: "5vh" }}>
-          <NavHeader />
-        </Col>
         <Col
           span={24}
-          className="scrollbar"
           style={{
-            height: "93vh",
-            paddingBlock: "0.5rem",
-            overflow: "hidden auto",
+            position: "fixed",
+            zIndex: 1,
+            width: "99%",
           }}
         >
-          {children}
+          <NavHeader />
         </Col>
+        <Col span={24}>{children}</Col>
       </Row>
     </ConfigProvider>
   );
@@ -90,15 +107,25 @@ export const Home = ({ children }) => {
 export const NavHeader = () => {
   const navigate = useNavigate();
   return (
-    <Row justify="space-between" align="middle" gutter={[8, 8]}>
-      <Col>
-        <img
-          src="https://tinyurl.com/2r9d9r97"
-          alt="205TH RECON BATTALION"
-          style={{ maxHeight: "5vh", cursor: "pointer" }}
-          onClick={() => navigate("/")}
-        />
-      </Col>
+    <Row
+      justify={isSmall() ? "center" : "space-between"}
+      align="middle"
+      gutter={[8, 8]}
+      style={{ width: "100%" }}
+    >
+      {!isSmall() && (
+        <Col>
+          <img
+            src="/205TH_3D_Logo.png"
+            alt="205TH RECON BATTALION"
+            style={{
+              maxHeight: "4.89vh",
+              cursor: "pointer",
+            }}
+            onClick={() => navigate("/")}
+          />
+        </Col>
+      )}
       <Col>
         <Row justify="center" align="middle" gutter={[8, 8]}>
           <Col>
@@ -122,53 +149,67 @@ export const NavHeader = () => {
             </Button>
           </Col>
           <Col>
-            <Tooltip placement="bottom" title="Erscheint bald">
-              <Button type="text" onClick={() => navigate("/roster")} disabled>
-                UNIT ROSTER
-              </Button>
-            </Tooltip>
+            <Button type="text" onClick={() => navigate("/orbat")} disabled>
+              ORBAT
+            </Button>
           </Col>
         </Row>
       </Col>
-      <Col>
-        <Button type="primary">ANMELDEN</Button>
-      </Col>
+      {!isSmall() && (
+        <Col>
+          <Button
+            type="primary"
+            ghost
+            onClick={() => {
+              if (Meteor.user()) {
+                Meteor.logout();
+              } else {
+                navigate("/login");
+              }
+            }}
+          >
+            {Meteor.user() ? "ABMELDEN" : "ANMELDUNG"}
+          </Button>
+        </Col>
+      )}
     </Row>
   );
 };
 
 export const Start = () => {
   return (
-    <Row justify="center" align="middle">
+    <Row gutter={[8, 8]} justify="center" align="middle">
       <Col span={24}>
         <div
           style={{
-            height: "39.3vh",
-            backgroundImage: "url('https://tinyurl.com/6yct5yap')",
+            height: "44vh",
+            backgroundImage: "url('/ScytheScreenshotContest.jpg')",
             backgroundClip: "border-box",
             backgroundRepeat: "no-repeat",
-            backgroundPosition: "0% 70%",
+            backgroundPosition: "0% 50%",
             backgroundSize: "cover",
             borderRadius: "8px",
           }}
         />
       </Col>
-      <Col md={24} lg={8}>
+      <Col xs={20} sm={20} md={20} lg={8}>
         <a
           href="https://units.arma3.com/unit/205threconbattalion"
           target="_blank"
           style={{
             display: "block",
             height: "50vh",
-            backgroundImage: "url('https://tinyurl.com/2r9d9r97')",
+            backgroundImage: "url('/205TH_3D_Logo.png')",
             backgroundClip: "border-box",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             backgroundSize: "contain",
           }}
-        />
+        >
+          {" "}
+        </a>
       </Col>
-      <Col md={24} lg={8}>
+      <Col xs={20} sm={20} md={12} lg={8}>
         <h3>WANN SPIELEN WIR?</h3>
         <span style={{ textAlign: "justify", wordBreak: "break-word" }}>
           Unsere regulären Missionen finden <b>jeden Samstag um 16 Uhr</b>{" "}
@@ -180,10 +221,11 @@ export const Start = () => {
           oder ähnliches.
         </span>
       </Col>
-      <Col md={24} lg={8}>
+      <Col xs={20} sm={20} md={20} lg={8}>
         <a
           href="https://discord.gg/205rb"
           target="_blank"
+          className="hover"
           style={{
             display: "block",
             height: "15vh",
@@ -192,6 +234,7 @@ export const Start = () => {
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             backgroundSize: "contain",
+            margin: isSmall() ? "5rem 0" : 0,
           }}
         />
       </Col>
@@ -205,7 +248,9 @@ export const Start = () => {
               YouTube
             </a>
           </Col>
-          <Col>|</Col>
+          <Col>
+            <Divider type="vertical" />
+          </Col>
           <Col>
             <a
               href="https://steamcommunity.com/groups/205threconbattalion"
@@ -226,17 +271,17 @@ export const About = () => {
       <Col span={24}>
         <div
           style={{
-            height: "40vh",
-            backgroundImage: "url('https://tinyurl.com/4wjrpucc')",
+            height: "44vh",
+            backgroundImage: "url('/helios_holo.jpg')",
             backgroundClip: "border-box",
             backgroundRepeat: "no-repeat",
-            backgroundPosition: "0% 30%",
+            backgroundPosition: "0% 27%",
             backgroundSize: "cover",
             borderRadius: "8px",
           }}
         />
       </Col>
-      <Col span={12}>
+      <Col xs={20} sm={20} md={12} lg={12}>
         <h3>ÜBER UNS</h3>
         <p style={{ textAlign: "justify", wordBreak: "break-word" }}>
           Das 205th Recon Battalion ist eine deutsche "StarSim"-Einheit. Als
@@ -256,6 +301,63 @@ export const About = () => {
           Grenzen hinaus statt, indem wir häufig Missionen (sog. „JointOPs“),
           bei denen verschiedene "StarSim" Einheiten, meist aus verschiedenen
           Ländern, zusammen spielen, organisieren oder an diesen teilnehmen.
+        </p>
+      </Col>
+    </Row>
+  );
+};
+
+export const Speciality = () => {
+  return (
+    <Row justify="center" align="middle">
+      <Col span={24}>
+        <div
+          style={{
+            height: "44vh",
+            backgroundImage: "url('/inf_dark.jpg')",
+            backgroundClip: "border-box",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "0% 30%",
+            backgroundSize: "cover",
+            borderRadius: "8px",
+          }}
+        />
+      </Col>
+      <Col xs={20} sm={20} md={12} lg={12}>
+        <h3>SPEZIALISIERUNG</h3>
+        <p>
+          Neben der Infanterie, wo du dich zwischen den Spezialisierungen Mörser
+          und Schilde, Scuba und mechanisiert oder Airborne entscheiden kannst,
+          gibt es außerdem die Möglichkeit bei uns als Pilot, Aufklärer
+          (ARF-Trooper) zu spielen.
+        </p>
+        <p>
+          In diesen Bereichen ist es natürlich möglich, weitere spezifische Aus-
+          und Fortbildungen zu machen. Unterstütze dein Squad als Medic,
+          zerstöre eintreffende Feinde als AT/AA Schütze, oder willst du doch
+          lieber aus dem Hintergrund agieren? Dann schalte den Feind als
+          Marksman aus der Distanz aus! Natürlich gibt es auch noch weitere
+          Spezialisierungen, welche man sich aneignen kann, diese findest du in
+          unserem Discord.
+        </p>
+        <p>
+          Das Schlachtfeld ist nicht so deins und du baust lieber Missionen und
+          zeust diese für deine Mitspieler? Kein Problem! Als Mitglied der Navy
+          kannst du, nach einer kurzen Probezeit, Nebenmissionen und sogar
+          Hauptmissionen bauen oder anderen Flottenmitgliedern bem Zeusen
+          helfen.
+        </p>
+        <p>
+          Noch nicht überzeugt? Dann schau doch bei uns auf dem{" "}
+          <a href="https://discord.gg/205rb" target="_blank">
+            Discord
+          </a>{" "}
+          vorbei, um weitere Informationen zu sammeln oder sprich uns einfach
+          auf unserem{" "}
+          <a href="ts3server://46.20.46.66:10189" target="_blank">
+            TeamSpeak
+          </a>{" "}
+          an, wir werden dir gerne weiterhelfen.
         </p>
       </Col>
     </Row>
@@ -321,86 +423,324 @@ export const Gallery = () => {
     `${URL_PREFIX}kzm6p4sk`,
   ];
   return (
+    <Row
+      gutter={[16, 16]}
+      justify="center"
+      align="middle"
+      style={{ marginTop: "5vh" }}
+    >
+      {images.map((link) => {
+        return (
+          <Col key={link} xs={20} sm={20} md={16}>
+            <img
+              src={link}
+              alt={link}
+              style={{
+                borderRadius: 8,
+                width: "100%",
+              }}
+            />
+          </Col>
+        );
+      })}
+    </Row>
+  );
+};
+
+export const Orbat = () => {
+  return <Start />;
+};
+
+export const Login = () => {
+  return (
     <Row justify="center" align="middle">
       <Col span={24}>
-        <Row gutter={[8, 8]} justify="space-between" align="middle">
-          {images.map((link) => {
-            return (
-              <Col
-                key={link}
-                span={24}
-                style={{
-                  backgroundImage: `url(${link})`,
-                  backgroundClip: "border-box",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "contain",
-                  height: "88vh",
-                }}
-              />
-            );
-          })}
+        <Row justify="center">
+          <Col style={{ marginTop: "2rem" }}>
+            <img
+              src="/205TH_3D_Logo.png"
+              alt="logo"
+              style={{ height: "30vh", margin: "0 auto" }}
+            />
+          </Col>
         </Row>
+      </Col>
+      <Col xs={20} lg={12}>
+        <Card title="ANMELDUNGSFORMULAR">
+          <LoginForm />
+        </Card>
       </Col>
     </Row>
   );
 };
 
-export const Speciality = () => {
+export const LoginForm = () => {
+  const navigate = useNavigate();
+  const onFinish = (values) => {
+    Meteor.loginWithPassword(
+      { username: values.username },
+      values.password,
+      () => {
+        navigate("/member");
+      }
+    );
+  };
   return (
-    <Row justify="center" align="middle">
-      <Col span={24}>
-        <div
-          style={{
-            height: "40vh",
-            backgroundImage: "url('https://tinyurl.com/4ea4pyfc')",
-            backgroundClip: "border-box",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "0% 30%",
-            backgroundSize: "cover",
-            borderRadius: "8px",
-          }}
+    <Form
+      name="login"
+      initialValues={{}}
+      layout="vertical"
+      onFinish={onFinish}
+      autoComplete="off"
+    >
+      <Form.Item
+        name="username"
+        label="Benutzername"
+        rules={[
+          {
+            required: true,
+            message: "Bitte Benutzernamen eingeben!",
+          },
+        ]}
+      >
+        <Input placeholder="Commander.Spark" autoComplete="current-username" />
+      </Form.Item>
+
+      <Form.Item
+        name="password"
+        label="Passwort"
+        rules={[
+          {
+            required: true,
+            message: "Bitte Passwort eingeben!",
+          },
+        ]}
+      >
+        <Input.Password
+          placeholder="sicheresPasswort123*"
+          autoComplete="current-password"
         />
-      </Col>
-      <Col span={12}>
-        <h3>SPEZIALISIERUNG</h3>
-        <p>
-          Neben der Infanterie, wo du dich zwischen den Spezialisierungen Mörser
-          und Schilde, Scuba und mechanisiert oder Airborne entscheiden kannst,
-          gibt es außerdem die Möglichkeit bei uns als Pilot, Aufklärer
-          (ARF-Trooper) zu spielen.
-        </p>
-        <p>
-          In diesen Bereichen ist es natürlich möglich, weitere spezifische Aus-
-          und Fortbildungen zu machen. Unterstütze dein Squad als Medic,
-          zerstöre eintreffende Feinde als AT/AA Schütze, oder willst du doch
-          lieber aus dem Hintergrund agieren? Dann schalte den Feind als
-          Marksman aus der Distanz aus! Natürlich gibt es auch noch weitere
-          Spezialisierungen, welche man sich aneignen kann, diese findest du in
-          unserem Discord.
-        </p>
-        <p>
-          Das Schlachtfeld ist nicht so deins und du baust lieber Missionen und
-          zeust diese für deine Mitspieler? Kein Problem! Als Mitglied der Navy
-          kannst du, nach einer kurzen Probezeit, Nebenmissionen und sogar
-          Hauptmissionen bauen oder anderen Flottenmitgliedern bem Zeusen
-          helfen.
-        </p>
-        <p>
-          Noch nicht überzeugt? Dann schau doch bei uns auf dem{" "}
-          <a href="https://discord.gg/205rb" target="_blank">
-            Discord
-          </a>{" "}
-          vorbei, um weitere Informationen zu sammeln oder sprich uns einfach
-          auf unserem{" "}
-          <a href="ts3server://46.20.46.66:10189" target="_blank">
-            TeamSpeak
-          </a>{" "}
-          an, wir werden dir gerne weiterhelfen.
-        </p>
-      </Col>
-    </Row>
+      </Form.Item>
+
+      <Row justify="end" align="middle" gutter={[8, 8]}>
+        <Col>
+          <a href="https://tinyurl.com/3tcnhfph" target="_blank">
+            Jetzt Bewerben
+          </a>
+        </Col>
+        <Col>
+          <Divider type="vertical" />
+        </Col>
+        <Col>
+          <Button type="primary" htmlType="submit">
+            Anmelden
+          </Button>
+        </Col>
+      </Row>
+    </Form>
   );
+};
+
+export const Member = () => {
+  const { user } = useTracker(() => ({ user: Meteor.user() }), []);
+  if (user) {
+    return (
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: "#6a0f0f",
+            colorInfo: "#6a0f0f",
+            colorBgBase: "#191919",
+            colorTextBase: "#fefefe",
+            fontSize: 16,
+            fontFamily: '"Geologica", sans-serif',
+            borderRadius: 10,
+            wireframe: false,
+          },
+          algorithm: theme.darkAlgorithm,
+        }}
+      >
+        <Row style={{ padding: "0.5rem" }}>
+          <Col span={24}>
+            <NavHeader />
+          </Col>
+          <Col span={24}>
+            <Row justify="center" align="stretch" gutter={[16, 16]}>
+              <Col span={24}>
+                <Divider>ALLGEMEIN</Divider>
+              </Col>
+              <Col span={8}>
+                <Card
+                  style={{ height: "100%" }}
+                  bodyStyle={{ height: "100%" }}
+                  title="Kalender"
+                  extra={
+                    <a
+                      href="https://calendar.google.com/calendar/u/1?cid=c3BhcmsyMDVyYkBnbWFpbC5jb20"
+                      target="_blank"
+                    >
+                      Link
+                    </a>
+                  }
+                >
+                  Hier findet ihr unsere Events wie MainOPs, FunOPs, JointOPs,
+                  aber auch Trainings und Ausbildungen.
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card
+                  style={{ height: "100%" }}
+                  bodyStyle={{ height: "100%" }}
+                  title="Konzeptvorlage"
+                  extra={
+                    <a
+                      href="https://docs.google.com/document/d/1DC1gTTZRw9DHW4ZW_vsjf8POZSwGx0L4FeQnUZ-b-Hk"
+                      target="_blank"
+                    >
+                      Link
+                    </a>
+                  }
+                >
+                  Für diejnigen die ein Squad erstellen möchten.
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card
+                  style={{ height: "100%" }}
+                  bodyStyle={{ height: "100%" }}
+                  title="Rekrutierungsformular"
+                  extra={
+                    <a
+                      href="https://docs.google.com/forms/d/e/1FAIpQLSf3i7xxllyLSVXMhZOfKozp9ppbR4sz23ta72BZXStARLAINw/viewform"
+                      target="_blank"
+                    >
+                      Link
+                    </a>
+                  }
+                >
+                  Durch das Ausfüllen dieses Fragebogens meldet man sich zum
+                  Rekrutierungsprozess an.
+                </Card>
+              </Col>
+              <Col span={24}>
+                <Divider>ENTWICKLER-TEAM TRELLOS</Divider>
+              </Col>
+              <Col span={8}>
+                <Card
+                  style={{ height: "100%" }}
+                  bodyStyle={{ height: "100%" }}
+                  title="Coding"
+                  extra={
+                    <a
+                      href="https://trello.com/b/SvbIfwUp/coding"
+                      target="_blank"
+                    >
+                      Link
+                    </a>
+                  }
+                >
+                  Aktuelles aus dem Coding-Team
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card
+                  style={{ height: "100%" }}
+                  bodyStyle={{ height: "100%" }}
+                  title="Graphics"
+                  extra={
+                    <a
+                      href="https://trello.com/b/ZTx3pdkv/graphics"
+                      target="_blank"
+                    >
+                      Link
+                    </a>
+                  }
+                >
+                  Aktuelles aus dem Grafik-Team
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card
+                  style={{ height: "100%" }}
+                  bodyStyle={{ height: "100%" }}
+                  title="Mission Making"
+                  extra={
+                    <a
+                      href="https://trello.com/b/X9Pip9LF/mission-making"
+                      target="_blank"
+                    >
+                      Link
+                    </a>
+                  }
+                >
+                  Aktuelles aus dem Zeus-Team
+                </Card>
+              </Col>
+              <Col span={24}>
+                <Divider>LINKS DIE BERECHTIGUNGSZUGRIFF BENÖTIGEN</Divider>
+              </Col>
+              <Col span={8}>
+                <Card
+                  style={{ height: "100%" }}
+                  bodyStyle={{ height: "100%" }}
+                  title="205th Roster"
+                  extra={
+                    <a
+                      href="https://docs.google.com/spreadsheets/d/14xBV00s0Sys3xdKdC14rv-sKc9mbJxR2x_Tuglu3yu0"
+                      target="_blank"
+                    >
+                      Link
+                    </a>
+                  }
+                >
+                  Eine Datenbank in der die Mitglieder und deren Daten
+                  gespeichert werden.
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card
+                  style={{ height: "100%" }}
+                  bodyStyle={{ height: "100%" }}
+                  title="205th Google Drive"
+                  extra={
+                    <a
+                      href="https://drive.google.com/drive/folders/1p0lJ3VyqSKqLv4_g2-MNTGbRUW8zo9nf?pli=1"
+                      target="_blank"
+                    >
+                      Link
+                    </a>
+                  }
+                >
+                  Eine Sammelstelle für alle Dokumente, wie z.B.
+                  Besprechungs-Protokolle.
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card
+                  style={{ height: "100%" }}
+                  bodyStyle={{ height: "100%" }}
+                  title="205th Graphics Drive"
+                  extra={
+                    <a
+                      href="https://drive.google.com/drive/folders/1-Su8Iu9uxfIORvtSASdqzCrmJp_PWhhQ?usp=share_link"
+                      target="_blank"
+                    >
+                      Link
+                    </a>
+                  }
+                >
+                  Eine Sammelstelle für alle Dokumente, wie z.B.
+                  Besprechungs-Protokolle.
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </ConfigProvider>
+    );
+  } else {
+    return <Start />;
+  }
 };
 
 export default App;

@@ -1,3 +1,13 @@
+*::-webkit-scrollbar-thumb {
+  background: #6a0f0f;
+  border-radius: 8px;
+}
+
+*::-webkit-scrollbar {
+  background: #191919;
+  width: 8px;
+}
+
 body {
   margin: 0;
   height: 100vh;
@@ -5,6 +15,7 @@ body {
   background-color: #191919;
   color: #fefefe;
   font-family: "Geologica", sans-serif;
+  overflow: hidden auto;
 }
 
 #react-target {
@@ -12,16 +23,11 @@ body {
   width: 100%;
 }
 
-.scrollbar {
-  scrollbar-color: #6a0f0f;
+.hover {
+  transition: ease-in-out 0.3s;
 }
 
-.scrollbar::-webkit-scrollbar {
-  background: #191919;
-  width: 8px;
-}
-
-.scrollbar::-webkit-scrollbar-thumb {
-  background: #6a0f0f;
-  border-radius: 8px;
+.hover:hover {
+  transition: ease-in-out 0.3s;
+  opacity: 0.6;
 }
